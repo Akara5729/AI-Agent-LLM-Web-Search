@@ -1,0 +1,12 @@
+{
+  "name": "ai-agent-chatbot",
+  "version": "1.0.0",
+  "description": "AI Chatbot powered by Ollama Llama 3.1",
+  "scripts": {
+    "start": "bun run src/server.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "^1.3.9"
+  }
+}

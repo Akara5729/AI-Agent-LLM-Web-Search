@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Akara AI — Smart Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#e2e8f0',
+                            200: '#cbd5e1',
+                            300: '#94a3b8',
+                            400: '#64748b',
+                            500: '#475569',
+                            600: '#334155',
+                            700: '#1e293b',
+                            800: '#0f172a',
+                            900: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body class="bg-dark-900 text-dark-100 h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 bg-dark-800 border-r border-dark-600 flex flex-col h-full shrink-0">
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-dark-600">
+            <button id="btn-new-chat"
+                class="w-full flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-xl text-white font-semibold transition-all duration-200 shadow-lg shadow-indigo-500/20">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                New Chat
+            </button>
+        </div>
+
+        <!-- Conversations List -->
+        <div id="conversations-list" class="flex-1 overflow-y-auto p-3 space-y-1">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-3 border-t border-dark-600">
+            <div class="text-xs text-dark-400 text-center">
+                Akara AI · Powered by Ollama
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="flex-1 flex flex-col h-full min-w-0">
+        <!-- Chat Header -->
+        <header class="h-14 bg-dark-800/80 backdrop-blur-sm border-b border-dark-600 flex items-center px-6 shrink-0">
+            <button id="btn-toggle-sidebar" class="mr-3 p-1.5 hover:bg-dark-700 rounded-lg transition-colors lg:hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <h1 id="chat-title" class="text-lg font-semibold text-dark-100 truncate">New Chat</h1>
+            <div class="ml-auto flex items-center gap-2">
+                <span id="search-status" class="text-xs text-dark-500 hidden">🌐 Web Search ON</span>
+            </div>
+        </header>
+
+        <!-- Messages Container -->
+        <div id="messages-container" class="flex-1 overflow-y-auto">
+            <div id="messages" class="max-w-4xl mx-auto py-6 px-4 space-y-6">
+                <!-- Welcome message -->
+                <div id="welcome-message"
+                    class="flex flex-col items-center justify-center h-full min-h-[50vh] text-center">
+                    <div
+                        class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-indigo-500/30">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-dark-100 mb-2">Akara AI</h2>
+                    <p class="text-dark-300 max-w-md mb-6">Asisten AI serbaguna — tanya apa saja! Coding, pengetahuan
+                        umum, ide kreatif, atau pertanyaan sehari-hari.</p>
+                    <div class="flex flex-wrap gap-3 justify-center max-w-lg">
+                        <span
+                            class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-full text-xs text-dark-300">💻
+                            Coding & Debug</span>
+                        <span
+                            class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-full text-xs text-dark-300">🌐
+                            Web Search</span>
+                        <span
+                            class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-full text-xs text-dark-300">📚
+                            Pengetahuan Umum</span>
+                        <span
+                            class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-full text-xs text-dark-300">💡
+                            Ide Kreatif</span>
+                        <span
+                            class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-full text-xs text-dark-300">📁
+                            Baca File Lokal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="border-t border-dark-600 bg-dark-800/50 backdrop-blur-sm px-4 py-4 shrink-0">
+            <div class="max-w-4xl mx-auto">
+                <!-- Search Toggle -->
+                <div class="flex items-center gap-2 mb-2 px-1">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="search-toggle" class="sr-only peer" checked>
+                        <div
+                            class="w-9 h-5 bg-dark-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600">
+                        </div>
+                        <span class="ml-2 text-xs font-medium text-dark-300">Search Web</span>
+                    </label>
+                </div>
+                <!-- Code Verification Toggle -->
+                <div class="flex items-center gap-2 mb-2 px-1">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="code-toggle" class="sr-only peer" checked>
+                        <div
+                            class="w-9 h-5 bg-dark-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600">
+                        </div>
+                        <span class="ml-2 text-xs font-medium text-dark-300">Code Verification</span>
+                    </label>
+                </div>
+                <form id="chat-form" class="flex gap-3 items-end">
+                    <div class="flex-1 relative">
+                        <textarea id="message-input" rows="1" placeholder="Tanya apa saja..."
+                            class="w-full resize-none rounded-xl border border-dark-500 bg-dark-700 px-4 py-3 pr-12 text-dark-100 placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all max-h-40"></textarea>
+                    </div>
+
+                    <button type="submit" id="btn-send"
+                        class="p-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl text-white transition-all duration-200 shadow-lg shadow-indigo-500/20 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </form>
+                <p class="text-xs text-dark-500 mt-2 text-center">Press Enter to send · Shift+Enter for new line</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>

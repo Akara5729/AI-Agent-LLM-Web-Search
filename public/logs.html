@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Backend Log Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#e2e8f0',
+                            300: '#94a3b8',
+                            400: '#64748b',
+                            500: '#475569',
+                            600: '#334155',
+                            700: '#1e293b',
+                            800: '#0f172a',
+                            900: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        .log-entry {
+            animation: slideIn 0.2s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .log-INFO {
+            border-left: 3px solid #22d3ee;
+        }
+
+        .log-INFO .log-level {
+            color: #22d3ee;
+        }
+
+        .log-WARN {
+            border-left: 3px solid #fbbf24;
+        }
+
+        .log-WARN .log-level {
+            color: #fbbf24;
+        }
+
+        .log-ERROR {
+            border-left: 3px solid #f87171;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .log-ERROR .log-level {
+            color: #f87171;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-dark-100 h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-dark-800 border-b border-dark-600 px-4 py-3 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+            <h1 class="font-semibold">Backend Log Viewer</h1>
+            <span id="status-badge"
+                class="text-xs px-2 py-0.5 rounded-full bg-green-900/50 text-green-400 border border-green-800">●
+                Connected</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Filter -->
+            <select id="filter-level"
+                class="bg-dark-700 border border-dark-500 text-dark-300 text-sm rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <option value="ALL">All Levels</option>
+                <option value="INFO">INFO</option>
+                <option value="WARN">WARN</option>
+                <option value="ERROR">ERROR</option>
+            </select>
+
+            <!-- Pause -->
+            <button id="btn-pause"
+                class="px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 border border-dark-500 rounded-lg transition-colors">
+                ⏸ Pause
+            </button>
+
+            <!-- Clear -->
+            <button id="btn-clear"
+                class="px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 border border-dark-500 rounded-lg transition-colors">
+                🗑 Clear
+            </button>
+        </div>
+    </header>
+
+    <!-- Log Counter -->
+    <div
+        class="bg-dark-800/50 border-b border-dark-600 px-4 py-1.5 flex items-center gap-4 text-xs text-dark-400 shrink-0">
+        <span>Total: <strong id="count-total" class="text-dark-300">0</strong></span>
+        <span>INFO: <strong id="count-info" class="text-cyan-400">0</strong></span>
+        <span>WARN: <strong id="count-warn" class="text-yellow-400">0</strong></span>
+        <span>ERROR: <strong id="count-error" class="text-red-400">0</strong></span>
+    </div>
+
+    <!-- Log Entries -->
+    <main id="log-container" class="flex-1 overflow-y-auto p-2 font-mono text-sm">
+        <div id="log-entries" class="space-y-0.5">
+            <!-- Populated by JS -->
+        </div>
+    </main>
+
+    <script src="/logs.js"></script>
+</body>
+
+</html>
